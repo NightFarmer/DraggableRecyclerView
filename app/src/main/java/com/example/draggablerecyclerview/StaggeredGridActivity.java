@@ -62,12 +62,12 @@ public class StaggeredGridActivity extends AppCompatActivity {
                 if (times < 2) {
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
-                            mRecyclerView.loadMoreComplete();
+//                            mRecyclerView.loadMoreComplete();
                             for (int i = 0; i < 25; i++) {
                                 listData.add("item" + (i + listData.size()));
                             }
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.refreshComplete();
+                            mRecyclerView.loadMoreComplete();
                         }
                     }, 1000);
                 } else {

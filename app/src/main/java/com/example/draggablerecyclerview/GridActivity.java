@@ -59,12 +59,12 @@ public class GridActivity extends AppCompatActivity {
                 if(times < 2){
                     new Handler().postDelayed(new Runnable(){
                         public void run() {
-                            mRecyclerView.loadMoreComplete();
+//                            mRecyclerView.loadMoreComplete();
                             for(int i = 0; i < 20 ;i++){
                                 listData.add("item" + (i + listData.size()) );
                             }
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.refreshComplete();
+                            mRecyclerView.loadMoreComplete();
                         }
                     }, 1000);
                 } else {
@@ -85,7 +85,7 @@ public class GridActivity extends AppCompatActivity {
             }
         });
 
-        listData = new  ArrayList<String>();
+        listData = new ArrayList<>();
         for(int i = 0; i < 20 ;i++){
             listData.add("item" + (i + listData.size()) );
         }

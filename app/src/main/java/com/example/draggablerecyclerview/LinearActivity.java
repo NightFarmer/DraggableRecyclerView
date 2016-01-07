@@ -60,17 +60,17 @@ public class LinearActivity extends AppCompatActivity {
 
             @Override
             public void onLoadMore() {
-                if (times < 2) {
+                if (times < 1) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
 
-                            mRecyclerView.loadMoreComplete();
                             for (int i = 0; i < 15; i++) {
                                 listData.add("item" + (i + listData.size()));
                             }
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.refreshComplete();
+                            mRecyclerView.loadMoreComplete();
+//                            mRecyclerView.refreshComplete();
                         }
                     }, 1000);
                 } else {
@@ -78,6 +78,7 @@ public class LinearActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             mAdapter.notifyDataSetChanged();
+//                            mRecyclerView.noMoreLoading();
                             mRecyclerView.loadMoreComplete();
                         }
                     }, 1000);
@@ -92,7 +93,7 @@ public class LinearActivity extends AppCompatActivity {
         });
 
         listData = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 3; i++) {
             listData.add("item" + (i + listData.size()));
         }
         mAdapter = new MyAdapter(listData);

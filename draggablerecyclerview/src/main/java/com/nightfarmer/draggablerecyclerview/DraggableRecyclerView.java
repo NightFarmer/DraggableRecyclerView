@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 /**
+ * 可下拉刷新的RecyclerView
  * Created by zhangfan on 16-1-6.
  */
 public class DraggableRecyclerView extends RecyclerView {
@@ -36,6 +37,7 @@ public class DraggableRecyclerView extends RecyclerView {
     private static final int TYPE_NORMAL = 0;
     private static final int TYPE_FOOTER = -3;
     private int previousTotal = 0;
+    private Adapter adapter;
 
     public DraggableRecyclerView(Context context) {
         this(context, null);
@@ -77,12 +79,26 @@ public class DraggableRecyclerView extends RecyclerView {
     public void addFootView(final View view) {
         mFootViews.clear();
         mFootViews.add(view);
+        if (view != null && view instanceof LoadingMoreFooter) {
+            view.setClickable(true);
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isLoadingData) return;
+                    loadMore();
+                }
+            });
+        }
     }
 
     public void loadMoreComplete() {
         isLoadingData = false;
         View footView = mFootViews.get(0);
-        if (previousTotal < getLayoutManager().getItemCount()) {
+//        Adapter adapter = getAdapter();
+//        int itemCount = adapter.getItemCount();
+        int itemCount = getLayoutManager().getItemCount() - mFootViews.size() - mHeaderViews.size();
+//        itemCount = itemCount - mFootViews.size() - mHeaderViews.size();
+        if (previousTotal < itemCount) {
             if (footView instanceof LoadingMoreFooter) {
                 ((LoadingMoreFooter) footView).setState(LoadingMoreFooter.STATE_COMPLETE);
             } else {
@@ -96,7 +112,7 @@ public class DraggableRecyclerView extends RecyclerView {
             }
             isnomore = true;
         }
-        previousTotal = getLayoutManager().getItemCount();
+        previousTotal = itemCount;
     }
 
     public void noMoreLoading() {
@@ -112,6 +128,7 @@ public class DraggableRecyclerView extends RecyclerView {
 
     public void refreshComplete() {
         mRefreshHeader.refreshComplete();
+        previousTotal = adapter.getItemCount();
     }
 
     public void setRefreshHeader(ArrowRefreshHeader refreshHeader) {
@@ -153,9 +170,11 @@ public class DraggableRecyclerView extends RecyclerView {
 
     @Override
     public void setAdapter(Adapter adapter) {
+        this.adapter = adapter;
         mWrapAdapter = new WrapAdapter(mHeaderViews, mFootViews, adapter);
         super.setAdapter(mWrapAdapter);
         adapter.registerAdapterDataObserver(mDataObserver);
+        previousTotal = adapter.getItemCount();
     }
 
     @Override
@@ -176,17 +195,20 @@ public class DraggableRecyclerView extends RecyclerView {
             }
             if (layoutManager.getChildCount() > 0
                     && lastVisibleItemPosition >= layoutManager.getItemCount() - 1 && layoutManager.getItemCount() > layoutManager.getChildCount() && !isnomore && mRefreshHeader.getState() < ArrowRefreshHeader.STATE_REFRESHING) {
-
-                View footView = mFootViews.get(0);
-                isLoadingData = true;
-                if (footView instanceof LoadingMoreFooter) {
-                    ((LoadingMoreFooter) footView).setState(LoadingMoreFooter.STATE_LAODING);
-                } else {
-                    footView.setVisibility(View.VISIBLE);
-                }
-                mLoadingListener.onLoadMore();
+                loadMore();
             }
         }
+    }
+
+    private void loadMore() {
+        View footView = mFootViews.get(0);
+        isLoadingData = true;
+        if (footView instanceof LoadingMoreFooter) {
+            ((LoadingMoreFooter) footView).setState(LoadingMoreFooter.STATE_LAODING);
+        } else {
+            footView.setVisibility(View.VISIBLE);
+        }
+        mLoadingListener.onLoadMore();
     }
 
     @Override
@@ -389,7 +411,6 @@ public class DraggableRecyclerView extends RecyclerView {
                 adapterCount = adapter.getItemCount();
                 if (adjPosition < adapterCount) {
                     adapter.onBindViewHolder(holder, adjPosition);
-                    return;
                 }
             }
         }
