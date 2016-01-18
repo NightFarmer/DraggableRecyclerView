@@ -226,6 +226,15 @@ public class DraggableRecyclerView extends RecyclerView {
         return super.onTouchEvent(ev);
     }
 
+    public void forceRefresh() {
+        mRefreshHeader.forceRefresh();
+        if (mLoadingListener != null) {
+            mLoadingListener.onRefresh();
+            isnomore = false;
+            previousTotal = 0;
+        }
+    }
+
     private int findMax(int[] lastPositions) {
         int max = lastPositions[0];
         for (int value : lastPositions) {

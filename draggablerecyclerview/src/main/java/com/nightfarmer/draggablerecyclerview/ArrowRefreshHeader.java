@@ -201,6 +201,12 @@ public class ArrowRefreshHeader extends LinearLayout implements BaseRefreshHeade
         }
     }
 
+
+    public void forceRefresh(){
+        setState(STATE_REFRESHING);
+        setVisiableHeight(mMeasuredHeight);
+    }
+
     @Override
     public boolean releaseAction() {
         boolean isOnRefresh = false;
