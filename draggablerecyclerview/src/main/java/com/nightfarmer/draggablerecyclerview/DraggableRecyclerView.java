@@ -77,6 +77,16 @@ public class DraggableRecyclerView extends RecyclerView {
     public void addFootView(final View view) {
         mFootViews.clear();
         mFootViews.add(view);
+        if (view instanceof LoadingMoreFooter) {
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    isLoadingData = true;
+                    ((LoadingMoreFooter) view).setState(LoadingMoreFooter.STATE_LAODING);
+                    if (mLoadingListener != null) mLoadingListener.onLoadMore();
+                }
+            });
+        }
     }
 
     public void loadMoreComplete() {
