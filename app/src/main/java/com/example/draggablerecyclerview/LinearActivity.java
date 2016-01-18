@@ -64,13 +64,13 @@ public class LinearActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-
-                            mRecyclerView.loadMoreComplete();
+                            int preSize = mAdapter.getItemCount() + mRecyclerView.getHeaderViews().size();
                             for (int i = 0; i < 15; i++) {
                                 listData.add("item" + (i + listData.size()));
                             }
-                            mAdapter.notifyDataSetChanged();
-                            mRecyclerView.refreshComplete();
+                            mAdapter.notifyItemRangeInserted(preSize, 15);
+                            mRecyclerView.loadMoreComplete();
+//                            mRecyclerView.refreshComplete();
                         }
                     }, 1000);
                 } else {
@@ -101,8 +101,6 @@ public class LinearActivity extends AppCompatActivity {
 
         mRecyclerView.forceRefresh();
     }
-
-
 
 
 }

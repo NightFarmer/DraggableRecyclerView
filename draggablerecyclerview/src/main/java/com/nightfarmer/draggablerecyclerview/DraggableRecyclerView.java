@@ -82,7 +82,8 @@ public class DraggableRecyclerView extends RecyclerView {
     public void loadMoreComplete() {
         isLoadingData = false;
         View footView = mFootViews.get(0);
-        if (previousTotal < getLayoutManager().getItemCount()) {
+        int itemCount = getAdapter().getItemCount() - mHeaderViews.size() - mFootViews.size();
+        if (previousTotal < itemCount) {
             if (footView instanceof LoadingMoreFooter) {
                 ((LoadingMoreFooter) footView).setState(LoadingMoreFooter.STATE_COMPLETE);
             } else {
@@ -96,7 +97,7 @@ public class DraggableRecyclerView extends RecyclerView {
             }
             isnomore = true;
         }
-        previousTotal = getLayoutManager().getItemCount();
+        previousTotal = itemCount;
     }
 
     public void noMoreLoading() {
@@ -112,6 +113,7 @@ public class DraggableRecyclerView extends RecyclerView {
 
     public void refreshComplete() {
         mRefreshHeader.refreshComplete();
+        previousTotal = getAdapter().getItemCount() - mHeaderViews.size() - mFootViews.size();
     }
 
     public void setRefreshHeader(ArrowRefreshHeader refreshHeader) {
@@ -156,6 +158,15 @@ public class DraggableRecyclerView extends RecyclerView {
         mWrapAdapter = new WrapAdapter(mHeaderViews, mFootViews, adapter);
         super.setAdapter(mWrapAdapter);
         adapter.registerAdapterDataObserver(mDataObserver);
+        previousTotal = adapter.getItemCount();
+    }
+
+    public ArrayList<View> getHeaderViews() {
+        return mHeaderViews;
+    }
+
+    public ArrayList<View> getFootViews() {
+        return mFootViews;
     }
 
     @Override
